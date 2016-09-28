@@ -47,5 +47,3 @@ cor_X <- cor(X)
 
 corrgram(cor_X, upper.panel = NULL,
          lower.panel = panel.cor2)
-
-  replace_with_space <- function(x) gsub(x, pattern = ".", replacement = '\n', fixed = T)
