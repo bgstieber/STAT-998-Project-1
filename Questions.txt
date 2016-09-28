@@ -1,0 +1,31 @@
+Experiment Questions:
+1)	What is loading?
+2)	How are mass, geometry and strength measured?
+a.	What do benefits look like for mass, geometry, and strength?
+3)	Skeletal site – where the bone is actually located?
+4)	Is tissue type available in the data?
+
+Objective Questions:
+1)	How is bone development measured?
+a.	Growth or changes in mineral content?
+2)	What is meant by early and late in this data set?
+
+Data Questions:
+1)	Description sheet says there are 42 individuals, but there are 56 unique ID’s in the data set?
+a.	Data entry error?
+N   = 3  4  5  6  7  8  9 10 
+IDs = 3  6  3 15  8  5 13  3 
+
+2)	For the radius measure, what is meant by 1/3?
+3)	Is it unusual for distal radius and distal modulus to be nearly perfectly related?
+a.	Distal Radius Third Area = Distal Modulus Third Radius ^ (1/3)
+4)	NN Width Hip is strongly related to NN ED Hip as well
+5)	For each objective which variable(s) are you mainly interested in?
+6)	What is the index of structural strength? How is it measured / calculated?
+7)	Are BMC all measured on the same units?
+a.	It seems like there’s a large variance if so. What explains this?
+8)	For physical activity variables is it safe to code NA values?
+9)	Are there any appropriate transformations to be made to the response variables?
+a.	E.g. UD BMC / UD Area ?	
+10)	For individuals who "skipped" a measurement reading, would it be appropriate to replace that reading with the average measurement before and after the missed measurement?
+11) 	Are times between measurements fairly constant?
