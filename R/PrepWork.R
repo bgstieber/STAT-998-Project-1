@@ -35,7 +35,8 @@ panel.cor2 <- function (x, y, corr = NULL, cor.method = 'pearson', digits = 2,
 
 replace_with_space <- function(x) gsub(x, pattern = ".", replacement = '\n', fixed = T)
 
-
+#create function to select all text after the second slash is found in the text
+#will be used to edit dates
 
 after_second_slash <- function(x){
   
