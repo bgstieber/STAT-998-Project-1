@@ -1,8 +1,11 @@
 library(plyr)
+library(dplyr)
+library(reshape2)
 library(ggplot2)
 library(lme4)
 theme_set(theme_bw())
 library(MASS)
+
 
 #using one of the response variables, Sub.Head.BMC
 #let's try to fit a model
@@ -85,6 +88,14 @@ anova(fit1)
 # 2 - Was in gymnastics, now has quit
 # could use it to interact with age @ DXA
 
+# Another idea:
+# Aim 1: investigate coefficient from each model we fit and interpret etc.
+# Aim 2: Design an early / late gymnastics variable and investigate?
+# Still kinda stuck on Aim 2
+# Aim 3: Repeat analysis for Aim 1, yet this time use 
+# centered and scaled measurements for dependent variables
+# (center and scale indepdent variables, too?)
+
 gym$YearsAfterGymQuit <- gym$Menarcheal.Age.at.DXA - gym$Menarcheal.Age.at.Quit.Date
 
 
@@ -117,4 +128,30 @@ fit2 <- lmer(Sub.head.BMC ~ Sub.Head.LM + Standing.Height +
 
 summary(fit2)
 anova(fit2)
+
+response_names <- c("Sub.head.BMC", "Distal.Radius.Third.Area", "Distal.bone.mineral.content.third", 
+                    "Distal.Modulus.Third.Radius", "UD.Area.Radius", "UD.BMC", "UD.IBS.Radius", 
+                    "Femoral.Neck.BMC.Hip", "NN.Section.Modulus.Hip", "NN.BR.Hip", 
+                    "NN.width.Hip", "NN.ED.Hip", "NN.ACT.Hip", "PA.L3.BMC.Spine")
+
+
+gym_sub_byID <- gym[c('ID','Group_Label','Group_Label2', 'Menarcheal.Age.at.DXA',
+                 'Sub.Head.LM',response_names)] %>%
+  group_by(ID) %>%
+  mutate_each_(funs((. - mean(., na.rm = T)) / sd(., na.rm = T)), vars = response_names) %>%
+  melt(., id.vars = c('ID','Group_Label','Group_Label2','Menarcheal.Age.at.DXA',
+                      'Sub.Head.LM'))
+
+
+gym_sub_nogroup <- gym[c('ID','Group_Label','Group_Label2', 'Menarcheal.Age.at.DXA',
+                      'Sub.Head.LM',response_names)] %>%
+  mutate_each_(funs((. - mean(., na.rm = T)) / sd(., na.rm = T)), vars = response_names) %>%
+  melt(., id.vars = c('ID','Group_Label','Group_Label2','Menarcheal.Age.at.DXA',
+                      'Sub.Head.LM'))
+
+ggplot(gym_sub_nogroup, aes(x = Menarcheal.Age.at.DXA, y = value))+
+  geom_jitter(aes(colour = Group_Label))+
+  geom_smooth(aes(group = variable), se = F)
+
+
 
