@@ -47,3 +47,74 @@ ggplot(gym, aes(x = NonGym.Physical.Activity, y = Sub.head.BMC))+
 #will be interesting to explore this relationship
 ggplot(gym, aes(x = Gymnastics, y = Sub.head.BMC))+
   geom_line(aes(group = ID))
+
+ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
+  geom_jitter()+
+  stat_smooth(se = F)
+
+#may need to actually convert that to categorical
+gym$ChronAgeAtMenarche_Group <- cut(gym$Chronologic.Age.at.Menarche,
+                                    breaks = quantile(gym$Chronologic.Age.at.Menarche, seq(0,1,.25)),
+                                    include.lowest = TRUE, 
+                                    labels = c('low','medlow','medhigh','high'))
+
+ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
+  geom_jitter(aes(colour = ChronAgeAtMenarche_Group), pch = 1)+
+  geom_smooth(aes(group = ChronAgeAtMenarche_Group,
+                  colour = ChronAgeAtMenarche_Group),
+              method = 'lm', se = F, size = 2)
+
+ggplot(gym, aes(x = Group_Label, y = Chronologic.Age.at.Menarche))+
+  geom_violin(draw_quantiles = c(.25, .5, .75))+
+  stat_summary(fun.y = 'mean', size = 2, col = 'blue', geom = 'point')
+
+#fit our first model
+
+fit1 <- lmer(Sub.head.BMC ~ Sub.Head.LM + Standing.Height + Group_Label + ChronAgeAtMenarche_Group
+             + Menarcheal.Age.at.DXA  + (Standing.Height | ID),
+             data = gym)
+
+summary(fit1)
+anova(fit1)
+
+
+#maybe we need to redefine the group labels...
+#something like:
+# 0 - Never in gymnastics
+# 1 - Currently in gymnastics
+# 2 - Was in gymnastics, now has quit
+# could use it to interact with age @ DXA
+
+gym$YearsAfterGymQuit <- gym$Menarcheal.Age.at.DXA - gym$Menarcheal.Age.at.Quit.Date
+
+
+ggplot(gym, aes(x = YearsAfterGymQuit, y = Sub.head.BMC))+
+  geom_jitter()
+
+gym$Group_Label2 <- ifelse(is.na(gym$YearsAfterGymQuit), 'Never',
+                           ifelse(gym$YearsAfterGymQuit >= (45 / 365), 'Quit',
+                                  'In Gymnastics'))
+
+#enter and interact with Age?
+ggplot(gym, aes(x = Menarcheal.Age.at.DXA, y = Sub.head.BMC))+
+  geom_jitter(aes(colour = Group_Label2), pch = 1, size = 2)+
+  geom_smooth(aes(colour = Group_Label2),
+              se = F, size = 1.2)+
+  scale_colour_brewer(palette = 'Dark2')
+
+
+ggplot(gym, aes(x = Menarcheal.Age.at.DXA, y = Sub.head.BMC))+
+  geom_jitter(aes(colour = Group_Label), pch = 1, size = 2)+
+  geom_smooth(aes(colour = Group_Label),
+              se = F, size = 1.2)+
+  scale_colour_brewer(palette = 'Dark2')
+
+fit2 <- lmer(Sub.head.BMC ~ Sub.Head.LM + Standing.Height + 
+        Group_Label2 + Menarcheal.Age.at.DXA + 
+         + ChronAgeAtMenarche_Group
+         + (Standing.Height | ID) + (1 | ID : Group_Label2),
+       data = gym)
+
+summary(fit2)
+anova(fit2)
+
