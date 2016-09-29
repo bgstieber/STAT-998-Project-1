@@ -3,6 +3,8 @@ library(dplyr)
 library(reshape2)
 library(ggplot2)
 library(lme4)
+library(gamm4)
+library(splines)
 theme_set(theme_bw())
 library(MASS)
 
@@ -51,6 +53,9 @@ ggplot(gym, aes(x = NonGym.Physical.Activity, y = Sub.head.BMC))+
 ggplot(gym, aes(x = Gymnastics, y = Sub.head.BMC))+
   geom_line(aes(group = ID))
 
+ggplot(gym, aes(x = Gymnastics + NonGym.Physical.Activity, y = Sub.head.BMC))+
+  geom_point()
+
 ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
   geom_jitter()+
   stat_smooth(se = F)
@@ -91,7 +96,7 @@ anova(fit1)
 # Another idea:
 # Aim 1: investigate coefficient from each model we fit and interpret etc.
 # Aim 2: Design an early / late gymnastics variable and investigate?
-# Still kinda stuck on Aim 2
+# Still kinda stuck on Aim 2  
 # Aim 3: Repeat analysis for Aim 1, yet this time use 
 # centered and scaled measurements for dependent variables
 # (center and scale indepdent variables, too?)
@@ -129,6 +134,17 @@ fit2 <- lmer(Sub.head.BMC ~ Sub.Head.LM + Standing.Height +
 summary(fit2)
 anova(fit2)
 
+#remove the Group within ID random intercept
+#it is probably not needed
+fit3 <- lmer(Sub.head.BMC ~ Sub.Head.LM + Standing.Height + 
+               Group_Label2 + Menarcheal.Age.at.DXA + 
+               + ChronAgeAtMenarche_Group
+             + (Standing.Height | ID),
+             data = gym)
+
+summary(fit3)
+anova(fit3)
+
 response_names <- c("Sub.head.BMC", "Distal.Radius.Third.Area", "Distal.bone.mineral.content.third", 
                     "Distal.Modulus.Third.Radius", "UD.Area.Radius", "UD.BMC", "UD.IBS.Radius", 
                     "Femoral.Neck.BMC.Hip", "NN.Section.Modulus.Hip", "NN.BR.Hip", 
@@ -153,5 +169,46 @@ ggplot(gym_sub_nogroup, aes(x = Menarcheal.Age.at.DXA, y = value))+
   geom_jitter(aes(colour = Group_Label))+
   geom_smooth(aes(group = variable), se = F)
 
+#definitely need to fit more than just a linear effect for age
+
+ggplot(gym_sub_nogroup, aes(x = Sub.Head.LM, y = value))+
+  geom_point(aes(colour = Group_Label2), pch = 1)+
+  geom_smooth(aes(colour = Group_Label2), se = F, span = .9)+
+  facet_wrap(~ variable)+
+  scale_colour_brewer(palette = 'Set1',
+                      breaks = c('Never','Quit','In Gymnastics'),
+                      name = 'Gym Group')+
+  ylab('Standardized Value (zero mean, unit variance)')
+
+ggplot(gym_sub_nogroup, aes(x = Menarcheal.Age.at.DXA, y = value))+
+  geom_point(aes(colour = Group_Label2), pch = 1)+
+  geom_smooth(aes(colour = Group_Label2), se = F, span = .9)+
+  facet_wrap(~ variable)+
+  scale_colour_brewer(palette = 'Set1',
+                      breaks = c('Never','Quit','In Gymnastics'),
+                      name = 'Gym Group')+
+  ylab('Standardized Value (zero mean, unit variance)')
 
 
+# #create a new age group variable, just three levels
+# gym$ChronAgeAtMenarche_Group2 <- cut(gym$Chronologic.Age.at.Menarche,
+#     breaks = quantile(gym$Chronologic.Age.at.Menarche, seq(0,1,1/3)),
+#     include.lowest = TRUE, 
+#     labels = c('low','med','high'))
+# 
+# 
+# fit4 <- update(fit3, .~. - ChronAgeAtMenarche_Group + ChronAgeAtMenarche_Group2)
+# summary(fit4)
+# anova(fit4)
+
+#FA.length doesn't need to be in the model
+#super correlated with StandingHeight
+fit5 <- update(fit3, .~. + FA.length)
+
+#fit3 still best model 
+#what if we fit using a smoother on Age?
+summary(fit3.gs <- gamm4(Sub.head.BMC ~ Sub.Head.LM + Standing.Height + Group_Label2 + 
+                           s(Menarcheal.Age.at.DXA) + ChronAgeAtMenarche_Group, data = gym,
+                         random = ~(1 + Standing.Height | ID)))
+#fit a cubic to it
+fit3.cubicage <- update(fit3, .~. + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3))
