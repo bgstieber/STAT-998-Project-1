@@ -151,6 +151,7 @@ response_names <- c("Sub.head.BMC", "Distal.Radius.Third.Area", "Distal.bone.min
                     "NN.width.Hip", "NN.ED.Hip", "NN.ACT.Hip", "PA.L3.BMC.Spine")
 
 
+
 gym_sub_byID <- gym[c('ID','Group_Label','Group_Label2', 'Menarcheal.Age.at.DXA',
                  'Sub.Head.LM',response_names)] %>%
   group_by(ID) %>%
@@ -160,14 +161,19 @@ gym_sub_byID <- gym[c('ID','Group_Label','Group_Label2', 'Menarcheal.Age.at.DXA'
 
 
 gym_sub_nogroup <- gym[c('ID','Group_Label','Group_Label2', 'Menarcheal.Age.at.DXA',
+                         'Standing.Height',
                       'Sub.Head.LM',response_names)] %>%
   mutate_each_(funs((. - mean(., na.rm = T)) / sd(., na.rm = T)), vars = response_names) %>%
   melt(., id.vars = c('ID','Group_Label','Group_Label2','Menarcheal.Age.at.DXA',
-                      'Sub.Head.LM'))
+                      'Sub.Head.LM', 'Standing.Height'))
 
-ggplot(gym_sub_nogroup, aes(x = Menarcheal.Age.at.DXA, y = value))+
-  geom_jitter(aes(colour = Group_Label))+
-  geom_smooth(aes(group = variable), se = F)
+
+gym_sub_base <- gym[c('ID','Group_Label','Group_Label2', 'Menarcheal.Age.at.DXA',
+                      'Standing.Height',
+                      'Sub.Head.LM',response_names)] %>%
+  melt(., id.vars = c('ID','Group_Label','Group_Label2','Menarcheal.Age.at.DXA',
+                      'Sub.Head.LM', 'Standing.Height'))
+
 
 #definitely need to fit more than just a linear effect for age
 
@@ -189,6 +195,32 @@ ggplot(gym_sub_nogroup, aes(x = Menarcheal.Age.at.DXA, y = value))+
                       name = 'Gym Group')+
   ylab('Standardized Value (zero mean, unit variance)')
 
+ggplot(gym_sub_nogroup, aes(x = Standing.Height, y = value))+
+  geom_point(aes(colour = Group_Label2), pch = 1)+
+  geom_smooth(aes(colour = Group_Label2), se = F, span = .9)+
+  facet_wrap(~ variable)+
+  scale_colour_brewer(palette = 'Set1',
+                      breaks = c('Never','Quit','In Gymnastics'),
+                      name = 'Gym Group')+
+  ylab('Standardized Value (zero mean, unit variance)')
+
+
+#visualize the densities
+
+ggplot(gym_sub_nogroup, aes(x = value))+
+  stat_function(fun = 'dnorm', colour = 'red', size = 2)+
+  geom_density(aes(group = variable), alpha = .2)+
+  ggtitle('Centered and Scaled Variable Density Plots',
+          subtitle = 'Red Curve is the Standard Normal Density')
+
+ggplot(gym_sub_base, aes(x = value))+
+  geom_density(fill = 'grey90')+
+  facet_wrap(~variable, scales = 'free')+
+  xlab('')+
+  ggtitle('Density Plots of Response Variables')+
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = 'bold'),
+        strip.background = element_rect(fill = 'white'))
 
 # #create a new age group variable, just three levels
 # gym$ChronAgeAtMenarche_Group2 <- cut(gym$Chronologic.Age.at.Menarche,
