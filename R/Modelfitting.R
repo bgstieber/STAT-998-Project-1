@@ -29,7 +29,7 @@ response_names_short <- c('SHBMC','DRA','DRBMC',
 
 rhs_form <- "~ Sub.Head.LM + Standing.Height + Group_Label2 + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
-(Standing.Height | ID)"
+(1 | ID)"
 
 # fitSHBMC <- lmer(Sub.head.BMC ~
 #                Sub.Head.LM + 
@@ -74,9 +74,9 @@ model_list <- list(
 
 lapply(model_list, anova)
 
-# par(mfrow = c(2,2))
-# 
-# pdf('ResidPlots.pdf', width = 11, height = 8.5)
+par(mfrow = c(2,2))
+
+pdf('ResidPlots002.pdf', width = 11, height = 8.5)
 
 lapply(seq_along(model_list), function(i){
   plot(fitted(model_list[[i]]), resid(model_list[[i]]),
@@ -93,7 +93,7 @@ lapply(seq_along(model_list), function(i){
   }
 )
 
-# dev.off()
+dev.off()
 
   # y = b0 + 
   #     b1 * SH LM + 
@@ -102,6 +102,8 @@ lapply(seq_along(model_list), function(i){
   #     b4 * age + 
   #     b5 * age^2 + 
   #     b6 * age^3 + 
-  #     b7 * AgeAtMenarcheGroup
+  #     b7 * AgeAtMenarcheGroup #might leave this term out
   #     eij +
-  #     b0i + b2i * Height
+  #     b0i
+
+
