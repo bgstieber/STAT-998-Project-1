@@ -222,6 +222,15 @@ ggplot(gym_sub_base, aes(x = value))+
         strip.text = element_text(face = 'bold'),
         strip.background = element_rect(fill = 'white'))
 
+#random slope for standing height?
+
+ggplot(gym_sub_nogroup, aes(x = Standing.Height, y = value))+
+  geom_line(aes(group = ID), alpha = .3)+
+  facet_wrap(~variable)+
+  xlab('Standing Height')+
+  ylab('Standardized Value (zero mean, unit variance)')+
+  ggtitle('Individual Trajectories for Each Response Variable')
+
 # #create a new age group variable, just three levels
 # gym$ChronAgeAtMenarche_Group2 <- cut(gym$Chronologic.Age.at.Menarche,
 #     breaks = quantile(gym$Chronologic.Age.at.Menarche, seq(0,1,1/3)),
