@@ -37,6 +37,11 @@ No missing data
 Considered using the lagged dependent variable, but the time between measurements
 is not constant, so we shouldn't do that.
 
+Should we consider fitting models on subsets of the data w/r/t menarche date?
+
+(1) fit on data with females pre-menarche
+(2) fit on data with females post-menarche
+
 Aim 1: Investigate the contribution of gymnastics to the bone development for early adults
 	- Fit the same model on each response variable
 	- Variable of interest: dummy variable for gymnastics participation?
