@@ -223,9 +223,10 @@ ggplot(gym_sub_nogroup, aes(x = Standing.Height, y = value))+
 #visualize the densities
 
 ggplot(gym_sub_nogroup, aes(x = value))+
-  stat_function(fun = 'dnorm', colour = 'red', size = 2)+
-  ylab('Standardized Values (zero meaun, unit variance)')+
   geom_density(aes(group = variable), alpha = .2)+
+  stat_function(fun = 'dnorm', colour = 'red', size = 2)+
+  xlab('Standardized Values (zero mean, unit variance)')+
+  ylab('Density')+
   ggtitle('Centered and Scaled Variable Density Plots',
           subtitle = 'Red Curve is the Standard Normal Density')
 
@@ -344,6 +345,21 @@ ggplot(df1_merge, aes(x = Group_Label, y = variable_f))+
         panel.grid = element_blank(),
         axis.text = element_text(size = 14))
 
+ggplot(df1_merge, aes(x = 1, y = variable_f))+
+  geom_tile(aes(fill = value.y), colour = 'black')+
+  facet_wrap(~Group_Label) +
+  geom_text(aes(label = value.x), size = 6)+
+  scale_fill_gradient(low = 'white', high = 'grey60')+
+  theme(legend.position = 'none',
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        axis.text = element_text(size = 14),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        strip.text = element_text(face = 'bold', size = 14),
+        strip.background = element_rect(fill = 'white'),
+        panel.margin = unit(0, 'cm'))
+
 
 ggplot(gym_sub_nogroup, aes(x = value))+
   stat_function(fun = 'dnorm', colour = 'red', size = 2)+
@@ -370,3 +386,36 @@ ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
         legend.title = element_text(size = 16)) 
 
 
+ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
+  geom_jitter(aes(colour = ChronAgeAtMenarche_Group), pch = 1, size = 2.5,
+              show.legend = F)+
+  geom_smooth(aes(group = ChronAgeAtMenarche_Group,
+                  colour = ChronAgeAtMenarche_Group),
+              method = 'lm', se = F, size = 2.5)+
+  xlab('Chronologic Age at Menarche')+
+  ylab('Sub head BMC')+
+  scale_colour_brewer(palette = 'Dark2',
+                      name = 'Age at Menarche Group')+
+  ggtitle('Age at Menarche by Sub head BMC')+
+  theme(legend.position = 'top',
+        axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14),
+        legend.margin = unit(0, 'cm'),
+        plot.title = element_text(size = 18),
+        legend.title = element_text(size = 16),
+        panel.grid.minor = element_blank())+
+  # geom_vline(aes(xintercept = 12.34 + .001),
+  #            linetype = 'dashed', alpha = .6)+
+  # geom_vline(aes(xintercept = 13.07+ .001),
+  #            linetype = 'dashed', alpha = .6)+
+  # geom_vline(aes(xintercept = 13.92),
+  #            linetype = 'dashed', alpha = .6)+
+   guides(colour = guide_legend(override.aes = list(size = 5))) #+
+  # geom_text(data = NULL, aes(x = 11.68, y = 2000, label = 'low', colour = 'low'),
+  #           check_overlap = TRUE, size = 9, show.legend = FALSE)+
+  # geom_text(data = NULL, aes(x = 12.73, y = 2250, label = 'medlow', colour = 'medlow'),
+  #           check_overlap = TRUE, size = 9, show.legend = FALSE)+
+  # geom_text(data = NULL, aes(x = 13.8, y = 750, label = 'medhigh', colour = 'medhigh'),
+  #           check_overlap = TRUE, size = 9, show.legend = FALSE)+
+  # geom_text(data = NULL, aes(x = 15, y = 1450, label = 'high', colour = 'high'),
+  #           check_overlap = TRUE, size = 9, show.legend = FALSE)
