@@ -149,6 +149,45 @@ preds_full_models <- do.call('cbind', lapply(model_list, predict))
 preds_full_models <- cbind.data.frame('Gymnastics' = gym$GymnasticsDummy, 
                                       preds_full_models)
 
+preds_full_models.gym <- subset(preds_full_models, Gymnastics == 1)[,-1]
+
 preds_sub_models <- do.call('cbind', lapply(sub_model_list, predict))
-preds_sub_models <- cbind('Gymnastics' = gym_sub$GymnasticsDummy, 
+preds_sub_models <- cbind.data.frame('Gymnastics' = gym_sub$GymnasticsDummy, 
                           preds_sub_models)
+
+preds_sub_models.gym <- subset(preds_sub_models, Gymnastics == 1)[,-1]
+
+#run 91 comparison tests
+#we know that for 3 (hip measures) of the 14 variables
+#the relationship btwn response and age do not match
+#also, should we use answer for objective 1 to 
+#inform our procedure for obj 3?
+
+comps <- t(combn(14, 2))
+
+sub.gym.results <- data.frame(
+  V1 = names(preds_sub_models.gym)[comps[,1]],
+  V2 = names(preds_sub_models.gym)[comps[,2]],
+  PercGTE = 0,
+  Pvalue = 0, stringsAsFactors = FALSE
+)
+
+for(i in 1:nrow(comps)){
+  
+  sub.gym.results[i,3] = 
+    mean(
+      preds_sub_models.gym[,comps[i,1]]
+      >=
+      preds_sub_models.gym[,comps[i,2]]  
+      , na.rm = T
+    )
+  
+  sub.gym.results[i,4] = 
+    wilcox.test(
+      preds_sub_models.gym[,comps[i,1]],
+      preds_sub_models.gym[,comps[i,2]],
+      paired = T
+    )$p.value
+  
+}
+
