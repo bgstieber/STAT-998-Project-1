@@ -1,0 +1,19 @@
+Questions 2
+
+(1) Is there a rough age after menarcheal date where females stop maturing? Does growth stop or dramatically slow down at a certain time point?
+	Also, is there an age range in which development is most rapid?
+
+(2) How was peri / post determined?
+
+(3) For aim 2: Is the appropriate comparison here between the non and peri groups?
+
+(4) For aim 1: are you more interested in comparison gymnastics to non - gymnastics, or is it also important to compare whether the individual was in gymnastics at the time?
+
+(5) Do you think participation in gymnastics alters bone development only while they're in gymnastics, or do some of the effects carry over? 
+	If they do carry over, how long do you think these effects would last?
+
+(6) 
+We foundthat for most of the responses, the values tend to increase with age, and that the values tend to
+be higher for those in gymnastics (after adjusting for other covariates).
+However, for three respones (Narrow Neck Hip Buckling Ratio, Narrow Neck Width, Narrow Neck Endosteal Diameter)
+all in the hip, the inverse was true. Does this surprise you?
