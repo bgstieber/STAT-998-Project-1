@@ -59,9 +59,14 @@ response_names_short <- paste0(c('SHBMC','DRA','DRBMC',
                           'HIPED','HIPACT','SBMC'),
                           'norm')
 
-rhs_form <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+rhs_form_linear <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
 (1 + Menarcheal.Age.at.DXA | ID)"
+
+rhs_form_cubic <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
+(1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)| ID)"
+
 
 fitSHBMC <- lmer(Sub.head.BMC_norm ~ GymnasticsDummy +
                    Sub.Head.LM + 
@@ -90,14 +95,20 @@ for(i in response_names){
   
   assign(paste0('fit', response_names_short[iter]),
          
-         lmer(as.formula(paste0(i, rhs_form)),
+         lmer(as.formula(paste0(i, rhs_form_linear)),
               data = gym, na.action = na.exclude)
          
   )
   
+  assign(paste0('fit.allME.', response_names_short[iter]),
+         lmer(as.formula(paste0(i, rhs_form_cubic)),
+              data = gym, na.action = na.exclude)
+         )
+  
+  
   assign(paste0('sub.fit', response_names_short[iter]),
          
-         lmer(as.formula(paste0(i, rhs_form)),
+         lmer(as.formula(paste0(i, rhs_form_linear)),
               data = gym_sub, 
               na.action = na.exclude)
          
@@ -120,6 +131,23 @@ model_list <- list(
   'fitHIPED' = fitHIPEDnorm,
   'fitHIPACT' = fitHIPACTnorm,
   'fitSBMC' = fitSBMCnorm
+)
+
+model_allME_list <- list(
+  'allME.fitSHBMC' = fit.allME.SHBMCnorm,
+  'allME.fitDRA' = fit.allME.DRAnorm,
+  'allME.fitDRBMC' = fit.allME.DRBMCnorm,
+  'allME.fitDRM' = fit.allME.DRMnorm,
+  'allME.fitUDRA' = fit.allME.UDRAnorm,
+  'allME.fitUDBMC' = fit.allME.UDBMCnorm,
+  'allME.fitUDIBS' = fit.allME.UDIBSnorm,
+  'allME.fitFNBMCHIP' = fit.allME.FNBMCHIPnorm,
+  'allME.fitHIPM' = fit.allME.HIPMnorm,
+  'allME.fitHIPBR' = fit.allME.HIPBRnorm,
+  'allME.fitHIPW' = fit.allME.HIPWnorm,
+  'allME.fitHIPED' = fit.allME.HIPEDnorm,
+  'allME.fitHIPACT' = fit.allME.HIPACTnorm,
+  'allME.fitSBMC' = fit.allME.SBMCnorm
 )
 
 
@@ -191,3 +219,6 @@ for(i in 1:nrow(comps)){
   
 }
 
+sub.gym.results$Pvalue_adj <- round(p.adjust(sub.gym.results$Pvalue, 'holm'), 4)
+
+sub.gym.results
