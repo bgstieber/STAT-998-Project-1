@@ -38,10 +38,21 @@ Considered using the lagged dependent variable, but the time between measurement
 is not constant, so we shouldn't do that.
 
 Should we consider fitting models on subsets of the data w/r/t menarche date?
-
+added 10/6: NO! Not really measuring what we're interested in.
 (1) fit on data with females pre-menarche
 (2) fit on data with females post-menarche
 (3) fit on data with females no more than 2.5 years after menarche
+
+For each aim, we fit basically the same model. We could say something in the write up about why we chose to not transform:
+ - The distributions of the responses were fairly symmetric and normal. We thought it was better to keep on the base scale
+   because it makes interpretation easier.
+We can also say why we used cubic polynomial rather than a spline or a simple linear term
+- It was apparent that there was significant curvature in the relationship between age and the
+  response variables. Rather than using a non parametric technique like a spline model,
+  we opted for including linear, quadratic, and cubic terms for men age at dxa. Not only does
+  this higher orderd polynomial allow us to fit a curve, it also gives us the flexibility to fit
+  random slope terms for each of the components of the age curve, since it is very likely that
+  the rate of development (wrt age) differs from subject to subject.
 
 Aim 1: Investigate the contribution of gymnastics to the bone development for early adults
 	- Fit the same model on each response variable
