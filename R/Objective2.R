@@ -163,23 +163,12 @@ gym_summaryIN <- t(do.call('data.frame', gym_summaryIN))
 
 gym_summary_subIN <- lapply(sub_model_list, function(x) summary(x)$coefficients[5,c(1,3)])
 
-gym_summary_subin <- t(do.call('data.frame', gym_summary_subIN))
+gym_summary_subIN <- t(do.call('data.frame', gym_summary_subIN))
 
 
 gym_models_IN <- setNames(cbind.data.frame(gym_summaryIN, gym_summary_subIN),
                             c('Estimate Full', 't value Full',
                               'Estimate Subset','t value Subset'))
 
-# y = b0 + 
-
-#     b1 * SH LM + 
-#     b2 * Height + 
-#     b3 * GymGroup + 
-#     b4 * age + 
-#     b5 * age^2 + 
-#     b6 * age^3 + 
-#     b7 * AgeAtMenarcheGroup #might leave this term out
-#     eij +
-#     b0i
 
 
