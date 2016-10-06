@@ -13,7 +13,7 @@ library(MASS)
 #let's try to fit a model
 gym <- read.csv('Gymnastics002.csv', stringsAsFactors = FALSE)
 gym$Group_Label <- c('PERI','POST','NON')[gym$Group.Division + 1]
-
+gym$ChronAge <- gym$Chronologic.Age.at.Menarche + gym$Menarcheal.Age.at.DXA
 #density plots
 
 ggplot(gym, aes(x = Sub.head.BMC))+
@@ -419,3 +419,40 @@ ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
   #           check_overlap = TRUE, size = 9, show.legend = FALSE)+
   # geom_text(data = NULL, aes(x = 15, y = 1450, label = 'high', colour = 'high'),
   #           check_overlap = TRUE, size = 9, show.legend = FALSE)
+
+
+
+p2 <- 
+  ggplot(gym, aes(x = Menarcheal.Age.at.DXA, y = UD.BMC))+
+  geom_line(aes(group = ID, colour = factor(GymnasticsDummy)),
+            size = 1, alpha = .5)+
+  geom_point(aes(colour = factor(GymnasticsDummy)), alpha = .5,
+             show.legend = FALSE)+
+  scale_color_colorblind(name = 'In Gymnastics',
+                         labels = c('Yes','No'),
+                         breaks = c(1,0))+
+  xlab('Menarcheal Age (years)')+ylab('Ultra Distal Bone Mineral Content (grams)')+
+  theme(legend.position = 'top',
+        legend.margin = unit(0, 'lines'))+
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 3)))
+
+p1 <- 
+  ggplot(gym, aes(x = ChronAge, y = UD.BMC))+
+  geom_line(aes(group = ID, colour = factor(GymnasticsDummy)),
+            size = 1, alpha = .5)+
+  geom_point(aes(colour = factor(GymnasticsDummy)), alpha = .5,
+             show.legend = FALSE)+
+  scale_color_colorblind(name = 'In Gymnastics',
+                         labels = c('Yes','No'),
+                         breaks = c(1,0))+
+  xlab('Chronological Age (years)')+ylab('Ultra Distal Bone Mineral Content (grams)')+
+  theme(legend.position = 'top',
+        legend.margin = unit(0, 'lines'))+
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 3)))
+
+
+p12 <- gridExtra::grid.arrange(p1, p2, ncol = 2)
+
+png('ChronVsAge.png', res = 72 * 4, width = 7, height = 5, units = 'in')
+plot(p12)
+dev.off()
