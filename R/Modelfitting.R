@@ -31,9 +31,15 @@ response_names_short <- c('SHBMC','DRA','DRBMC',
                           'FNBMCHIP','HIPM','HIPBR','HIPW',
                           'HIPED','HIPACT','SBMC')
 
-rhs_form <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+rhs_form_linear <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
 (1 + Menarcheal.Age.at.DXA | ID)"
+
+
+rhs_form_cubic <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
+(1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)| ID)"
+
 
 fitSHBMC <- lmer(Sub.head.BMC ~ GymnasticsDummy +
                    Sub.Head.LM + 
@@ -46,82 +52,118 @@ fitSHBMC <- lmer(Sub.head.BMC ~ GymnasticsDummy +
              data = gym)
 
 
-fitSHBMC.sub <- lmer(Sub.head.BMC ~ GymnasticsDummy +
-                   Sub.Head.LM + 
-                   Standing.Height + 
-                   Menarcheal.Age.at.DXA +
-                   I(Menarcheal.Age.at.DXA ^ 2) + 
-                   I(Menarcheal.Age.at.DXA^3) +
-                   ChronAgeAtMenarche_Group + 
-                   (1 + Menarcheal.Age.at.DXA | ID),
-                 data = gym[gym$Menarcheal.Age.at.DXA <= 2.5, ])
+# fitSHBMC.sub <- lmer(Sub.head.BMC ~ GymnasticsDummy +
+#                    Sub.Head.LM + 
+#                    Standing.Height + 
+#                    Menarcheal.Age.at.DXA +
+#                    I(Menarcheal.Age.at.DXA ^ 2) + 
+#                    I(Menarcheal.Age.at.DXA^3) +
+#                    ChronAgeAtMenarche_Group + 
+#                    (1 + Menarcheal.Age.at.DXA | ID),
+#                  data = gym[gym$Menarcheal.Age.at.DXA <= 2.5, ])
 
 iter <- 1
 
+
 for(i in response_names){
   
-  assign(paste0('fit', response_names_short[iter]),
+  assign(paste0('fit.', response_names_short[iter]),
          
-         lmer(as.formula(paste0(i, rhs_form)),
+         lmer(as.formula(paste0(i, rhs_form_linear)),
               data = gym, na.action = na.exclude)
          
-         )
+  )
   
-  assign(paste0('sub.fit', response_names_short[iter]),
+  assign(paste0('fit.cub.', response_names_short[iter]),
          
-         lmer(as.formula(paste0(i, rhs_form)),
-              data = gym[gym$Menarcheal.Age.at.DXA <= 2.5, ],
+         lmer(as.formula(paste0(i, rhs_form_cubic)),
+              data = gym,
               na.action = na.exclude)
          
   )
   iter = iter + 1
 }
 
-model_list <- list(
-  'fitSHBMC' = fitSHBMC,
-  'fitDRA' = fitDRA,
-  'fitDRBMC' = fitDRBMC,
-  'fitDRM' = fitDRM,
-  'fitUDRA' = fitUDRA,
-  'fitUDBMC' = fitUDBMC,
-  'fitUDIBS' = fitUDIBS,
-  'fitFNBMCHIP' = fitFNBMCHIP,
-  'fitHIPM' = fitHIPM,
-  'fitHIPBR' = fitHIPBR,
-  'fitHIPW' = fitHIPW,
-  'fitHIPED' = fitHIPED,
-  'fitHIPACT' = fitHIPACT,
-  'fitSBMC' = fitSBMC
+# for(i in response_names){
+#   
+#   assign(paste0('fit', response_names_short[iter]),
+#          
+#          lmer(as.formula(paste0(i, rhs_form)),
+#               data = gym, na.action = na.exclude)
+#          
+#          )
+#   
+#   assign(paste0('sub.fit', response_names_short[iter]),
+#          
+#          lmer(as.formula(paste0(i, rhs_form)),
+#               data = gym[gym$Menarcheal.Age.at.DXA <= 2.5, ],
+#               na.action = na.exclude)
+#          
+#   )
+#   iter = iter + 1
+# }
+
+model_list_linear <- list(
+  'fit.SHBMC' = fit.SHBMC,
+  'fit.DRA' = fit.DRA,
+  'fit.DRBMC' = fit.DRBMC,
+  'fit.DRM' = fit.DRM,
+  'fit.UDRA' = fit.UDRA,
+  'fit.UDBMC' = fit.UDBMC,
+  'fit.UDIBS' = fit.UDIBS,
+  'fit.FNBMCHIP' = fit.FNBMCHIP,
+  'fit.HIPM' = fit.HIPM,
+  'fit.HIPBR' = fit.HIPBR,
+  'fit.HIPW' = fit.HIPW,
+  'fit.HIPED' = fit.HIPED,
+  'fit.HIPACT' = fit.HIPACT,
+  'fit.SBMC' = fit.SBMC
 )
 
-
-sub_model_list <- list(
-  'sub.fitSHBMC' = sub.fitSHBMC,
-  'sub.fitDRA' = sub.fitDRA,
-  'sub.fitDRBMC' = sub.fitDRBMC,
-  'sub.fitDRM' = sub.fitDRM,
-  'sub.fitUDRA' = sub.fitUDRA,
-  'sub.fitUDBMC' = sub.fitUDBMC,
-  'sub.fitUDIBS' = sub.fitUDIBS,
-  'sub.fitFNBMCHIP' = sub.fitFNBMCHIP,
-  'sub.fitHIPM' = sub.fitHIPM,
-  'sub.fitHIPBR' = sub.fitHIPBR,
-  'sub.fitHIPW' = sub.fitHIPW,
-  'sub.fitHIPED' = sub.fitHIPED,
-  'sub.fitHIPACT' = sub.fitHIPACT,
-  'sub.fitSBMC' = sub.fitSBMC
+model_list_cubic <- list(
+  'fitSHBMC' = fit.cub.SHBMC,
+  'fitDRA' = fit.cub.DRA,
+  'fitDRBMC' = fit.cub.DRBMC,
+  'fitDRM' = fit.cub.DRM,
+  'fitUDRA' = fit.cub.UDRA,
+  'fitUDBMC' = fit.cub.UDBMC,
+  'fitUDIBS' = fit.cub.UDIBS,
+  'fitFNBMCHIP' = fit.cub.FNBMCHIP,
+  'fitHIPM' = fit.cub.HIPM,
+  'fitHIPBR' = fit.cub.HIPBR,
+  'fitHIPW' = fit.cub.HIPW,
+  'fitHIPED' = fit.cub.HIPED,
+  'fitHIPACT' = fit.cub.HIPACT,
+  'fitSBMC' = fit.cub.SBMC
 )
 
+# sub_model_list <- list(
+#   'sub.fitSHBMC' = sub.fitSHBMC,
+#   'sub.fitDRA' = sub.fitDRA,
+#   'sub.fitDRBMC' = sub.fitDRBMC,
+#   'sub.fitDRM' = sub.fitDRM,
+#   'sub.fitUDRA' = sub.fitUDRA,
+#   'sub.fitUDBMC' = sub.fitUDBMC,
+#   'sub.fitUDIBS' = sub.fitUDIBS,
+#   'sub.fitFNBMCHIP' = sub.fitFNBMCHIP,
+#   'sub.fitHIPM' = sub.fitHIPM,
+#   'sub.fitHIPBR' = sub.fitHIPBR,
+#   'sub.fitHIPW' = sub.fitHIPW,
+#   'sub.fitHIPED' = sub.fitHIPED,
+#   'sub.fitHIPACT' = sub.fitHIPACT,
+#   'sub.fitSBMC' = sub.fitSBMC
+# )
 
-lapply(model_list, anova)
-lapply(sub_model_list, anova)
+
+lapply(model_list_linear, anova)
+lapply(model_list_cubic, anova)
 
 
-pdf('ResidPlots003.pdf', width = 11, height = 8.5)
+pdf('Obj1_Linear_Resid001.pdf', width = 11, height = 8.5)
 par(mfrow = c(2,2))
-lapply(seq_along(model_list), function(i){
-  plot(fitted(model_list[[i]]), resid(model_list[[i]]),
-       main = paste('Model:', names(model_list)[i]),
+lapply(seq_along(model_list_linear), function(i){
+  plot(fitted(model_list_linear[[i]]), resid(model_list_linear[[i]]),
+       main = paste('Model:', names(model_list_linear)[i]),
        xlab = 'Fitted Values',
        ylab = 'Residuals')
   # lines(
@@ -137,11 +179,11 @@ lapply(seq_along(model_list), function(i){
 
 dev.off()
 
-pdf('SubResidPlots003.pdf', width = 11, height = 8.5)
+pdf('Obj1_Cubic_Resid001.pdf', width = 11, height = 8.5)
 par(mfrow = c(2,2))
-lapply(seq_along(sub_model_list), function(i){
-  plot(fitted(sub_model_list[[i]]), resid(sub_model_list[[i]]),
-       main = paste('Model:', names(sub_model_list)[i]),
+lapply(seq_along(model_list_cubic), function(i){
+  plot(fitted(model_list_cubic[[i]]), resid(model_list_cubic[[i]]),
+       main = paste('Model:', names(model_list_cubic)[i]),
        xlab = 'Fitted Values',
        ylab = 'Residuals')
   # lines(
@@ -160,19 +202,22 @@ dev.off()
 
 #in each model we fit, the gymnastics coefficient was the fourth coefficient
 
-gym_summary <- lapply(model_list, function(x) summary(x)$coefficients[4,c(1,3)])
+gym_summary_lin <- lapply(model_list_linear, function(x) summary(x)$coefficients[4,c(1,3)])
 
-gym_summary <- t(do.call('data.frame', gym_summary))
+gym_summary_lin <- t(do.call('data.frame', gym_summary_lin))
 
-gym_summary_sub <- lapply(sub_model_list, function(x) summary(x)$coefficients[4,c(1,3)])
+gym_summary_cub <- lapply(model_list_cubic, function(x) summary(x)$coefficients[4,c(1,3)])
 
-gym_summary_sub <- t(do.call('data.frame', gym_summary_sub))
+gym_summary_cub <- t(do.call('data.frame', gym_summary_cub))
 
 
-gym_models_1 <- setNames(cbind.data.frame(gym_summary, gym_summary_sub),
-                         c('Estimate Full', 't value Full',
-                           'Estimate Subset','t value Subset'))
+gym_models_1 <- setNames(cbind.data.frame(gym_summary_lin, gym_summary_cub),
+                         c('Estimate Linear', 't value Linear',
+                           'Estimate Cubic','t value Cubic'))
 
+rownames(gym_models_1) <- response_names
+
+gym_models_1
 
   # y = b0 + 
 
