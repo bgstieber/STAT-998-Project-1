@@ -6,6 +6,7 @@ Questions 2
 (2) How was peri / post determined?
 
 (3) For aim 2: Is the appropriate comparison here between the non and peri groups?
+	i.e. is it okay to perform the analysis on this subset?
 
 (4) For aim 1: are you more interested in comparison gymnastics to non - gymnastics, or is it also important to compare whether the individual was in gymnastics at the time?
 
