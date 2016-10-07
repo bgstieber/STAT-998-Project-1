@@ -69,11 +69,21 @@ Aim 2: Investigate the contribution of early gymnastics to the bone development 
 		+ Categorical variable describing stage
 			- In gym _or_ Quit gym _or_ Never in gym?
 
-Subset the data (only NON and PERI)
+Fit two models:
+
+(1) Subset the data (only NON and PERI)
 Fit regression using Group_Label2 (Quit, Never, In Gymnastics)
 If Never is base level, investigate beta1 (coefficient for In Gym) and beta2 (coefficient for Quit)
 Also compare beta1 and beta2
-Possibly interact with menarcheal age at DXA ?
+
+(2) Subset the data (only PERI and POST)
+Fit regression using In Gymnastics * Group_Label1 ?
+multiple comparisons
+
+compare Peri Quit to Post Quit
+Also compare Quit to In 
+
+Possibly interact with menarcheal age at DXA ? NO!
 
 
 Aim 3: Investigate whether the contributions of gymnastics are different to the development of bones
