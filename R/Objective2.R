@@ -34,9 +34,9 @@ response_names_short <- c('SHBMC','DRA','DRBMC',
                           'FNBMCHIP','HIPM','HIPBR','HIPW',
                           'HIPED','HIPACT','SBMC')
 
-rhs_form <- "~ Sub.Head.LM + Standing.Height + Group_Label2 + Menarcheal.Age.at.DXA +
-I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
-(1 + Menarcheal.Age.at.DXA | ID)"
+rhs_form <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group +
+(1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)  | ID)"
 
 
 iter <- 1
