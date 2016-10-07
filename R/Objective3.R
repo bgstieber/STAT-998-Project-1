@@ -93,12 +93,12 @@ iter <- 1
 
 for(i in response_names){
   
-  assign(paste0('fit', response_names_short[iter]),
-         
-         lmer(as.formula(paste0(i, rhs_form_linear)),
-              data = gym, na.action = na.exclude)
-         
-  )
+  # assign(paste0('fit', response_names_short[iter]),
+  #        
+  #        lmer(as.formula(paste0(i, rhs_form_linear)),
+  #             data = gym, na.action = na.exclude)
+  #        
+  # )
   
   assign(paste0('fit.allME.', response_names_short[iter]),
          lmer(as.formula(paste0(i, rhs_form_cubic)),
@@ -106,32 +106,32 @@ for(i in response_names){
          )
   
   
-  assign(paste0('sub.fit', response_names_short[iter]),
-         
-         lmer(as.formula(paste0(i, rhs_form_linear)),
-              data = gym_sub, 
-              na.action = na.exclude)
-         
-  )
+  # assign(paste0('sub.fit', response_names_short[iter]),
+  #        
+  #        lmer(as.formula(paste0(i, rhs_form_linear)),
+  #             data = gym_sub, 
+  #             na.action = na.exclude)
+  #        
+  # )
   iter = iter + 1
 }
 
-model_list <- list(
-  'fitSHBMC' = fitSHBMCnorm,
-  'fitDRA' = fitDRAnorm,
-  'fitDRBMC' = fitDRBMCnorm,
-  'fitDRM' = fitDRMnorm,
-  'fitUDRA' = fitUDRAnorm,
-  'fitUDBMC' = fitUDBMCnorm,
-  'fitUDIBS' = fitUDIBSnorm,
-  'fitFNBMCHIP' = fitFNBMCHIPnorm,
-  'fitHIPM' = fitHIPMnorm,
-  'fitHIPBR' = fitHIPBRnorm,
-  'fitHIPW' = fitHIPWnorm,
-  'fitHIPED' = fitHIPEDnorm,
-  'fitHIPACT' = fitHIPACTnorm,
-  'fitSBMC' = fitSBMCnorm
-)
+# model_list <- list(
+#   'fitSHBMC' = fitSHBMCnorm,
+#   'fitDRA' = fitDRAnorm,
+#   'fitDRBMC' = fitDRBMCnorm,
+#   'fitDRM' = fitDRMnorm,
+#   'fitUDRA' = fitUDRAnorm,
+#   'fitUDBMC' = fitUDBMCnorm,
+#   'fitUDIBS' = fitUDIBSnorm,
+#   'fitFNBMCHIP' = fitFNBMCHIPnorm,
+#   'fitHIPM' = fitHIPMnorm,
+#   'fitHIPBR' = fitHIPBRnorm,
+#   'fitHIPW' = fitHIPWnorm,
+#   'fitHIPED' = fitHIPEDnorm,
+#   'fitHIPACT' = fitHIPACTnorm,
+#   'fitSBMC' = fitSBMCnorm
+# )
 
 model_allME_list <- list(
   'allME.fitSHBMC' = fit.allME.SHBMCnorm,
@@ -151,39 +151,39 @@ model_allME_list <- list(
 )
 
 
-sub_model_list <- list(
-  'sub.fitSHBMC' = sub.fitSHBMCnorm,
-  'sub.fitDRA' = sub.fitDRAnorm,
-  'sub.fitDRBMC' = sub.fitDRBMCnorm,
-  'sub.fitDRM' = sub.fitDRMnorm,
-  'sub.fitUDRA' = sub.fitUDRAnorm,
-  'sub.fitUDBMC' = sub.fitUDBMCnorm,
-  'sub.fitUDIBS' = sub.fitUDIBSnorm,
-  'sub.fitFNBMCHIP' = sub.fitFNBMCHIPnorm,
-  'sub.fitHIPM' = sub.fitHIPMnorm,
-  'sub.fitHIPBR' = sub.fitHIPBRnorm,
-  'sub.fitHIPW' = sub.fitHIPWnorm,
-  'sub.fitHIPED' = sub.fitHIPEDnorm,
-  'sub.fitHIPACT' = sub.fitHIPACTnorm,
-  'sub.fitSBMC' = sub.fitSBMCnorm
-)
+# sub_model_list <- list(
+#   'sub.fitSHBMC' = sub.fitSHBMCnorm,
+#   'sub.fitDRA' = sub.fitDRAnorm,
+#   'sub.fitDRBMC' = sub.fitDRBMCnorm,
+#   'sub.fitDRM' = sub.fitDRMnorm,
+#   'sub.fitUDRA' = sub.fitUDRAnorm,
+#   'sub.fitUDBMC' = sub.fitUDBMCnorm,
+#   'sub.fitUDIBS' = sub.fitUDIBSnorm,
+#   'sub.fitFNBMCHIP' = sub.fitFNBMCHIPnorm,
+#   'sub.fitHIPM' = sub.fitHIPMnorm,
+#   'sub.fitHIPBR' = sub.fitHIPBRnorm,
+#   'sub.fitHIPW' = sub.fitHIPWnorm,
+#   'sub.fitHIPED' = sub.fitHIPEDnorm,
+#   'sub.fitHIPACT' = sub.fitHIPACTnorm,
+#   'sub.fitSBMC' = sub.fitSBMCnorm
+# )
 
-lapply(model_list, anova)
-lapply(sub_model_list, anova)
+# lapply(model_list, anova)
+# lapply(sub_model_list, anova)
 
 #grab predicted values
 
-preds_full_models <- do.call('cbind', lapply(model_list, predict))
+preds_full_models <- do.call('cbind', lapply(model_allME_list, predict))
 preds_full_models <- cbind.data.frame('Gymnastics' = gym$GymnasticsDummy, 
                                       preds_full_models)
 
 preds_full_models.gym <- subset(preds_full_models, Gymnastics == 1)[,-1]
 
-preds_sub_models <- do.call('cbind', lapply(sub_model_list, predict))
-preds_sub_models <- cbind.data.frame('Gymnastics' = gym_sub$GymnasticsDummy, 
-                          preds_sub_models)
-
-preds_sub_models.gym <- subset(preds_sub_models, Gymnastics == 1)[,-1]
+# preds_sub_models <- do.call('cbind', lapply(sub_model_list, predict))
+# preds_sub_models <- cbind.data.frame('Gymnastics' = gym_sub$GymnasticsDummy, 
+#                           preds_sub_models)
+# 
+# preds_sub_models.gym <- subset(preds_sub_models, Gymnastics == 1)[,-1]
 
 #run 91 comparison tests
 #we know that for 3 (hip measures) of the 14 variables
@@ -193,32 +193,32 @@ preds_sub_models.gym <- subset(preds_sub_models, Gymnastics == 1)[,-1]
 
 comps <- t(combn(14, 2))
 
-sub.gym.results <- data.frame(
-  V1 = names(preds_sub_models.gym)[comps[,1]],
-  V2 = names(preds_sub_models.gym)[comps[,2]],
+gym_results <- data.frame(
+  V1 = names(preds_full_models.gym)[comps[,1]],
+  V2 = names(preds_full_models.gym)[comps[,2]],
   PercGTE = 0,
   Pvalue = 0, stringsAsFactors = FALSE
 )
 
 for(i in 1:nrow(comps)){
   
-  sub.gym.results[i,3] = 
+  gym_results[i,3] = 
     mean(
-      preds_sub_models.gym[,comps[i,1]]
+      preds_full_models.gym[,comps[i,1]]
       >=
-      preds_sub_models.gym[,comps[i,2]]  
+        preds_full_models.gym[,comps[i,2]]  
       , na.rm = T
     )
   
-  sub.gym.results[i,4] = 
+  gym_results[i,4] = 
     wilcox.test(
-      preds_sub_models.gym[,comps[i,1]],
-      preds_sub_models.gym[,comps[i,2]],
+      preds_full_models.gym[,comps[i,1]],
+      preds_full_models.gym[,comps[i,2]],
       paired = T
     )$p.value
   
 }
 
-sub.gym.results$Pvalue_adj <- round(p.adjust(sub.gym.results$Pvalue, 'holm'), 4)
+gym_results$Pvalue_adj <- round(p.adjust(gym_results$Pvalue, 'holm'), 4)
 
-sub.gym.results
+gym_results
