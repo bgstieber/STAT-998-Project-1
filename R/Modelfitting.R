@@ -1,4 +1,6 @@
 library(lme4)
+library(lmerTest)
+library(nlme)
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -33,12 +35,20 @@ response_names_short <- c('SHBMC','DRA','DRBMC',
 
 rhs_form_linear <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
-(1 + Menarcheal.Age.at.DXA | ID)"
+                   (1 + Menarcheal.Age.at.DXA | ID) "
 
 
 rhs_form_cubic <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
-I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
-(1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)| ID)"
+I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group +
+(1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)  | ID)
+"
+
+rhs_form_linear_nlme <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group"
+
+
+rhs_form_cubic_nlme <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group"
 
 
 fitSHBMC <- lmer(Sub.head.BMC ~ GymnasticsDummy +
@@ -63,20 +73,43 @@ fitSHBMC <- lmer(Sub.head.BMC ~ GymnasticsDummy +
 #                  data = gym[gym$Menarcheal.Age.at.DXA <= 2.5, ])
 
 iter <- 1
-
-
+##for lme4
 for(i in response_names){
   
   assign(paste0('fit.', response_names_short[iter]),
          
          lmer(as.formula(paste0(i, rhs_form_linear)),
-              data = gym, na.action = na.exclude)
+             data = gym, na.action = na.exclude)
          
   )
   
   assign(paste0('fit.cub.', response_names_short[iter]),
          
          lmer(as.formula(paste0(i, rhs_form_cubic)),
+             data = gym,
+             na.action = na.exclude)
+         
+  )
+  iter = iter + 1
+}
+
+##for nlme
+for(i in response_names){
+  
+  assign(paste0('fit.', response_names_short[iter]),
+         
+         lme(as.formula(paste0(i, rhs_form_linear)),
+             random = 
+               ~ 1 + Menarcheal.Age.at.DXA| ID,
+              data = gym, na.action = na.exclude)
+         
+  )
+  
+  assign(paste0('fit.cub.', response_names_short[iter]),
+         
+         lme(as.formula(paste0(i, rhs_form_cubic)),
+             random = 
+               ~ 1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)| ID,
               data = gym,
               na.action = na.exclude)
          
@@ -85,20 +118,20 @@ for(i in response_names){
 }
 
 # for(i in response_names){
-#   
+# 
 #   assign(paste0('fit', response_names_short[iter]),
-#          
+# 
 #          lmer(as.formula(paste0(i, rhs_form)),
 #               data = gym, na.action = na.exclude)
-#          
+# 
 #          )
-#   
+# 
 #   assign(paste0('sub.fit', response_names_short[iter]),
-#          
+# 
 #          lmer(as.formula(paste0(i, rhs_form)),
 #               data = gym[gym$Menarcheal.Age.at.DXA <= 2.5, ],
 #               na.action = na.exclude)
-#          
+# 
 #   )
 #   iter = iter + 1
 # }
@@ -128,7 +161,7 @@ model_list_cubic <- list(
   'fitUDRA' = fit.cub.UDRA,
   'fitUDBMC' = fit.cub.UDBMC,
   'fitUDIBS' = fit.cub.UDIBS,
-  'fitFNBMCHIP' = fit.cub.FNBMCHIP,
+  ##'fitFNBMCHIP' = fit.cub.FNBMCHIP,
   'fitHIPM' = fit.cub.HIPM,
   'fitHIPBR' = fit.cub.HIPBR,
   'fitHIPW' = fit.cub.HIPW,
@@ -202,22 +235,36 @@ dev.off()
 
 #in each model we fit, the gymnastics coefficient was the fourth coefficient
 
-gym_summary_lin <- lapply(model_list_linear, function(x) summary(x)$coefficients[4,c(1,3)])
+gym_summary_lin <- lapply(model_list_linear, function(x) summary(x)$coefficients[4,c(1,4,5)])
 
 gym_summary_lin <- t(do.call('data.frame', gym_summary_lin))
 
-gym_summary_cub <- lapply(model_list_cubic, function(x) summary(x)$coefficients[4,c(1,3)])
+gym_summary_cub <- lapply(model_list_cubic, function(x) 
+  summary(x)$coefficients[4,c(1,4,5)]
+)
 
 gym_summary_cub <- t(do.call('data.frame', gym_summary_cub))
 
+fit.FNBMC_nlme <- lme(as.formula(paste0('Femoral.Neck.BMC.Hip', rhs_form_cubic_nlme)),
+                 random = 
+                   ~ 1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)| ID,
+                 data = gym,
+                 na.action = na.exclude)
 
-gym_models_1 <- setNames(cbind.data.frame(gym_summary_lin, gym_summary_cub),
-                         c('Estimate Linear', 't value Linear',
-                           'Estimate Cubic','t value Cubic'))
+summary_vec <- summary(fit.FNBMC_nlme)$tTable[4,c(1,4,5)]
 
-rownames(gym_models_1) <- response_names
+gym_summary_cub <- rbind.data.frame(gym_summary_cub, summary_vec)
 
-gym_models_1
+gym_summary_cub[,3] = round(gym_summary_cub[,3], 3)
+# gym_models_1 <- setNames(cbind.data.frame(gym_summary_lin, gym_summary_cub),
+#                          c('Estimate Linear', 't value Linear',
+#                            'Estimate Cubic','t value Cubic'))
+
+
+
+rownames(gym_summary_cub) <- c(response_names[-8], response_names[8])
+
+# gym_models_1
 
   # y = b0 + 
 
