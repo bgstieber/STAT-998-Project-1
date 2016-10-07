@@ -7,7 +7,7 @@ library(gamm4)
 library(splines)
 theme_set(theme_bw())
 library(MASS)
-
+library(ggthemes)
 
 #using one of the response variables, Sub.Head.BMC
 #let's try to fit a model
@@ -368,6 +368,15 @@ ggplot(gym_sub_nogroup, aes(x = value))+
   ggtitle('Centered and Scaled Variable Density Plots',
           subtitle = 'Red Curve is the Standard Normal Density')
 
+
+ggplot(gym_sub_nogroup, aes(x = value))+
+  geom_density(aes(group = variable), alpha = .2)+
+  stat_function(fun = 'dnorm', colour = 'blue', size = 2)+
+  xlab('Standardized Values (zero mean, unit variance)')+
+  ylab('Density') + 
+  ggtitle('Centered and Scaled Variable Density Plots',
+          subtitle = 'Red Curve is the Standard Normal Density')
+
 ggplot(gym, aes(x = Chronologic.Age.at.Menarche, y = Sub.head.BMC))+
   geom_jitter(aes(colour = ChronAgeAtMenarche_Group), pch = 1)+
   geom_smooth(aes(group = ChronAgeAtMenarche_Group,
@@ -452,7 +461,33 @@ p1 <-
 
 
 p12 <- gridExtra::grid.arrange(p1, p2, ncol = 2)
+# 
+# png('ChronVsAge.png', res = 72 * 4, width = 7, height = 5, units = 'in')
+# plot(p12)
+# dev.off()
 
-png('ChronVsAge.png', res = 72 * 4, width = 7, height = 5, units = 'in')
-plot(p12)
-dev.off()
+#another plot used in the report
+
+p3 <- gym_sub_nogroup %>%
+  filter(variable %in% c('UD.BMC','UD.IBS.Radius')) %>%
+  mutate(Gymnastics = ifelse(Group_Label == 'NON', 'No','Yes'),
+         variable = ifelse(variable == 'UD.BMC',
+                           'Ultra-distal Bone Mineral Content',
+                           'Ultra-distal Structural Strength Index'))%>%
+  ggplot(., aes(x = Menarcheal.Age.at.DXA, y = value))+
+  geom_line(aes(group = ID, colour = Gymnastics), alpha = .6)+
+  geom_point(aes(colour = Gymnastics), alpha = .6, show.legend = FALSE)+
+  facet_wrap(~variable)+
+  scale_colour_colorblind(name = 'In Gymnastics',
+                          breaks = c('Yes','No'))+
+  xlab('Menarcheal Age at DXA Scan (years)')+
+  ylab('Standardized Values (mean = 0, sd = 1)')+
+  theme(legend.position = 'top',
+        strip.background = element_rect(fill = 'white'),
+        strip.text = element_text(face = 'bold'),        
+        legend.margin = unit(0, 'lines'))+
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 3)))
+
+#  png('MenAgeCurves.png', res = 72 * 4, width = 7, height = 5, units = 'in')
+# p3
+#  dev.off()
