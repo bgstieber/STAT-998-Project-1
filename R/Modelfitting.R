@@ -264,6 +264,8 @@ gym_summary_cub[,3] = round(gym_summary_cub[,3], 3)
 
 rownames(gym_summary_cub) <- c(response_names[-8], response_names[8])
 
+summary_objective1_PERIPOST_IN_NON_NEVER <- gym_summary_cub
+
 # gym_models_1
 
   # y = b0 + 
