@@ -221,4 +221,4 @@ for(i in 1:nrow(comps)){
 
 gym_results$Pvalue_adj <- round(p.adjust(gym_results$Pvalue, 'holm'), 4)
 
-gym_results
+summary_objective3_GYM_pairwise_comparisons <- gym_results
