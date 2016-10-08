@@ -2,6 +2,7 @@ library(lme4)
 library(lmerTest)
 library(ggplot2)
 library(multcomp)
+library(dplyr)
 theme_set(theme_bw())
 
 gym <- read.csv('Gymnastics002.csv', stringsAsFactors = FALSE)
@@ -153,6 +154,8 @@ rownames(gym_summaryQUIT) <- response_names
 
 gym_summaryQUIT[,3] <- round(gym_summaryQUIT[,3], 3)
 
+summary_objective2_PERI_QUIT_NON_NEVER <- gym_summaryQUIT
+
 # gym_summary_subQUIT <- lapply(sub_model_list, function(x) summary(x)$coefficients[4,c(1,3)])
 # 
 # gym_summary_subQUIT <- t(do.call('data.frame', gym_summary_subQUIT))
@@ -170,6 +173,8 @@ gym_summaryIN <- t(do.call('data.frame', gym_summaryIN))
 rownames(gym_summaryIN) <- response_names
 
 gym_summaryIN[,3] <- round(gym_summaryIN[,3], 3)
+
+summary_objective2_PERI_IN_NON_NEVER <- gym_summaryIN
 
 # gym_summary_subIN <- lapply(sub_model_list, function(x) summary(x)$coefficients[5,c(1,3)])
 # 
@@ -241,7 +246,7 @@ lapply(model_listPERIPOST, function(x) broom::tidy(summary(glht(x, linfct = mcp(
   data.table::rbindlist() %>% 
   cbind(response_names, .) %>% 
   dplyr::select(response_names, estimate, statistic, p.value) %>% 
-  dplyr::mutate(p.value = round(p.value, 3))
+  dplyr::mutate(p.value = round(p.value, 3)) -> summary_objective2_PERI_QUIT_POST_QUIT
 
 #compare QUIT to IN
 
@@ -249,4 +254,4 @@ lapply(model_listPERIPOST, function(x) broom::tidy(summary(glht(x, linfct = mcp(
   data.table::rbindlist() %>% 
   cbind(response_names, .) %>% 
   dplyr::select(response_names, estimate, statistic, p.value) %>% 
-  dplyr::mutate(p.value = round(p.value, 3))
+  dplyr::mutate(p.value = round(p.value, 3)) -> summary_objective2_PERIPOST_IN_PERIPOST_QUIT
