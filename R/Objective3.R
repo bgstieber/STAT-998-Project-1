@@ -42,10 +42,21 @@ gym_sub <- cbind.data.frame(gym_sub, gym_sub_response_center)
 
 gym_response <- gym[response_names]
 
-gym_response_center <- scale(gym_response, center = T, scale = T)
+gym_response_center <- data.frame(scale(gym_response, center = T, scale = T))
 
 colnames(gym_response_center) <- paste0(response_names,
                                         '_norm')
+
+#need to multiply three responses by -1
+
+reverse_responses <- c('NN.BR.Hip_norm',
+                       'NN.width.Hip_norm',
+                       'NN.ED.Hip_norm'
+                       )
+
+gym_response_center[reverse_responses] <- -1 * gym_response_center[reverse_responses]
+
+
 
 gym <- cbind.data.frame(gym, gym_response_center)
 
@@ -59,35 +70,35 @@ response_names_short <- paste0(c('SHBMC','DRA','DRBMC',
                           'HIPED','HIPACT','SBMC'),
                           'norm')
 
-rhs_form_linear <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
-I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
-(1 + Menarcheal.Age.at.DXA | ID)"
+# rhs_form_linear <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
+# I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
+# (1 + Menarcheal.Age.at.DXA | ID)"
 
 rhs_form_cubic <- "~ Sub.Head.LM + Standing.Height + GymnasticsDummy + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group + 
 (1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)| ID)"
 
 
-fitSHBMC <- lmer(Sub.head.BMC_norm ~ GymnasticsDummy +
-                   Sub.Head.LM + 
-                   Standing.Height + 
-                   Menarcheal.Age.at.DXA +
-                   I(Menarcheal.Age.at.DXA ^ 2) + 
-                   I(Menarcheal.Age.at.DXA^3) +
-                   ChronAgeAtMenarche_Group + 
-                   (1 + Menarcheal.Age.at.DXA | ID),
-                 data = gym)
-
-
-fitSHBMC.sub <- lmer(Sub.head.BMC_norm ~ GymnasticsDummy +
-                       Sub.Head.LM + 
-                       Standing.Height + 
-                       Menarcheal.Age.at.DXA +
-                       I(Menarcheal.Age.at.DXA ^ 2) + 
-                       I(Menarcheal.Age.at.DXA^3) +
-                       ChronAgeAtMenarche_Group + 
-                       (1 + Menarcheal.Age.at.DXA | ID),
-                     data = gym_sub)
+# fitSHBMC <- lmer(Sub.head.BMC_norm ~ GymnasticsDummy +
+#                    Sub.Head.LM + 
+#                    Standing.Height + 
+#                    Menarcheal.Age.at.DXA +
+#                    I(Menarcheal.Age.at.DXA ^ 2) + 
+#                    I(Menarcheal.Age.at.DXA^3) +
+#                    ChronAgeAtMenarche_Group + 
+#                    (1 + Menarcheal.Age.at.DXA | ID),
+#                  data = gym)
+# 
+# 
+# fitSHBMC.sub <- lmer(Sub.head.BMC_norm ~ GymnasticsDummy +
+#                        Sub.Head.LM + 
+#                        Standing.Height + 
+#                        Menarcheal.Age.at.DXA +
+#                        I(Menarcheal.Age.at.DXA ^ 2) + 
+#                        I(Menarcheal.Age.at.DXA^3) +
+#                        ChronAgeAtMenarche_Group + 
+#                        (1 + Menarcheal.Age.at.DXA | ID),
+#                      data = gym_sub)
 
 iter <- 1
 
