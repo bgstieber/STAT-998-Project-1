@@ -8,6 +8,8 @@ objective1_results <- read.csv('summary_objective1.csv',
 #reorder
 objective1_results <- objective1_results[c(1:7,14,8:13),]
 
+objective1_standardized_results <- read.csv('Objective1_Standardized_coef.csv')
+
 #compares peri group while in gymnastics to non group
 objective2_PERIIn_NONNever <- read.csv('summary_objective2_PERIIn_NONNever.csv',
                                        stringsAsFactors = FALSE)
@@ -23,12 +25,15 @@ objective2_PERIQuit_POSTQuit <- read.csv('summary_objective2_PERIQuit_POSTQuit.c
                                        stringsAsFactors = FALSE)[,-1]
 
 
+
+
 change_col_names <- c('Response Variable',
                   'Estimate',
                   't value',
                   'p value')
     
 names(objective1_results) <- change_col_names
+names(objective1_standardized_results) <- change_col_names
 names(objective2_PERIIn_NONNever) <- change_col_names
 names(objective2_PERIQuit_NONNever) <- change_col_names
 names(objective2_PERIPOSTin_PERIPOSTquit) <- change_col_names
@@ -64,6 +69,7 @@ change_response_names <- c(
 )
 
 objective1_results[,1] <- change_response_names
+objective1_standardized_results[,1] <- change_response_names
 objective2_PERIIn_NONNever[,1] <- change_response_names
 objective2_PERIQuit_NONNever[,1] <- change_response_names
 objective2_PERIPOSTin_PERIPOSTquit[,1] <- change_response_names
@@ -80,6 +86,7 @@ round_all <- function(df, digits = 3){
 }
 
 (objective1_results <- round_all(objective1_results))
+(objective1_standardized_results <- round_all(objective1_standardized_results))
 (objective2_PERIIn_NONNever <- round_all(objective2_PERIIn_NONNever))
 (objective2_PERIQuit_NONNever <- round_all(objective2_PERIQuit_NONNever))
 (objective2_PERIPOSTin_PERIPOSTquit <- round_all(objective2_PERIPOSTin_PERIPOSTquit))
@@ -93,7 +100,10 @@ round_all <- function(df, digits = 3){
 
 library(corrgram)
 
-objective3_results <-read.csv('summary_objective3_pairwisecomps.csv', 
+# objective3_results <-read.csv('summary_objective3_pairwisecomps.csv', 
+#                               stringsAsFactors = FALSE)[,-1]
+
+objective3_results <-read.csv('summary_objective3_pairwisecomps002.csv', 
                               stringsAsFactors = FALSE)[,-1]
 
 model_names <- c("allME.fitSHBMC", "allME.fitDRA", "allME.fitDRBMC", "allME.fitDRM", 
@@ -118,6 +128,8 @@ names(objective3_results) <- c('LHS', 'RHS', 'LHS GTE RHS','p-value',
 comps <- t(combn(14,2))
 comp_matrix_perc <- diag(14)
 comp_matrix_num <- diag(14)
+comp_matrix_pvalue <- diag(14)
+
 
 
 for(i in 1:nrow(comps)){
@@ -136,6 +148,44 @@ for(i in 1:nrow(comps)){
     
     comp_matrix_num[comps[i,2], comps[i,1]] <- objective3_results[i, 3]
     
+    
+    comp_matrix_pvalue[comps[i,1], comps[i,2]] <- objective3_results[i, 5]
+    
+    comp_matrix_pvalue[comps[i,2], comps[i,1]] <- objective3_results[i, 5]
+    
 }
 
 
+# panel.cor2 <- function (x, y, corr = NULL, cor.method = 'pearson', digits = 2, 
+#                         cex.cor, ...) 
+# {
+#     if (is.null(corr)) {
+#         if (sum(complete.cases(x, y)) < 2) {
+#             warning("Need at least 2 complete cases for cor()")
+#             return()
+#         }
+#         else {
+#             corr <- cor(x, y, use = "pair", method = cor.method)
+#         }
+#     }
+#     auto <- missing(cex.cor)
+#     usr <- par("usr")
+#     on.exit(par(usr))
+#     par(usr = c(0, 1, 0, 1))
+#     ncol <- 14
+#     pal <- col.regions(ncol)
+#     col.ind <- as.numeric(cut(corr, breaks = seq(from = -1, to = 1, 
+#                                                  length = ncol + 1), include.lowest = TRUE))
+#     corr <- formatC(corr, digits = digits, format = "f")
+#     if (auto) 
+#         cex.cor <- 0.7/strwidth(corr)
+#     text(0.5, 0.5, corr, cex = cex.cor, col = pal[col.ind])
+# }
+
+response_names2 <- c('Sub-head\nBMC', 'DR 1/3\nArea', 'DR 1/3\nBMC','DR 1/3\nMod',
+                    'UDR\nArea', 'UDR\nBMC', 'UDR\nIBS', 'FN\nBMC', 'NN\nMod',
+                    'NN\nBR', 'NN\nWidth', 'NN\nED', 'NN\nCT', 'PA L3\nBMC')
+
+corrgram(comp_matrix_pvalue, upper.panel = NULL, lower.panel = panel.cor,
+         col.regions = function(x) gray.colors(x, start = 0, end = .6),
+         labels = response_names2, cex.labels = 1.2)
