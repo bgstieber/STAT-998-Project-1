@@ -37,6 +37,8 @@ response_names_short <- c('SHBMC','DRA','DRBMC',
                           'FNBMCHIP','HIPM','HIPBR','HIPW',
                           'HIPED','HIPACT','SBMC')
 
+gym_sub[response_names] <- scale(gym_sub[response_names], center = T, scale = T)
+
 rhs_form_PERINON <- "~ Sub.Head.LM + Standing.Height + Group_Label2 + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group +
 (1 + Menarcheal.Age.at.DXA + I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3)  | ID)"
@@ -192,6 +194,7 @@ gym_sub2$InGymnastics <- ifelse(gym_sub2$Group_Label2 != 'Quit', 1, 0)
 
 gym_sub2$my_interaction <- interaction(gym_sub2$Group_Label, gym_sub2$InGymnastics)
 
+gym_sub2[response_names] <- scale(gym_sub2[response_names], scale = T, center = T)
 
 rhs_form_PERIPOST <- "~ Sub.Head.LM + Standing.Height + my_interaction + Menarcheal.Age.at.DXA +
 I(Menarcheal.Age.at.DXA ^ 2) + I(Menarcheal.Age.at.DXA^3) + ChronAgeAtMenarche_Group +
@@ -242,7 +245,8 @@ model_listPERIPOST <- list(
 glht(model_listPERIPOST$fitSHBMC, linfct = mcp(my_interaction = "POST.0 - PERI.0 = 0")) %>% summary
 
 
-lapply(model_listPERIPOST, function(x) broom::tidy(summary(glht(x, linfct = mcp(my_interaction = "POST.0 - PERI.0 = 0"))))) %>% 
+lapply(model_listPERIPOST, function(x) 
+    broom::tidy(summary(glht(x, linfct = mcp(my_interaction = "POST.0 - PERI.0 = 0"))))) %>% 
   data.table::rbindlist() %>% 
   cbind(response_names, .) %>% 
   dplyr::select(response_names, estimate, statistic, p.value) %>% 
@@ -250,8 +254,23 @@ lapply(model_listPERIPOST, function(x) broom::tidy(summary(glht(x, linfct = mcp(
 
 #compare QUIT to IN
 
-lapply(model_listPERIPOST, function(x) broom::tidy(summary(glht(x, linfct = mcp(my_interaction = "POST.1 + PERI.1 - POST.0 - PERI.0 = 0"))))) %>% 
+lapply(model_listPERIPOST, function(x) 
+    broom::tidy(summary(glht(x, 
+    linfct = mcp(my_interaction = "POST.1 + PERI.1 - POST.0 - PERI.0 = 0"))))) %>% 
   data.table::rbindlist() %>% 
   cbind(response_names, .) %>% 
   dplyr::select(response_names, estimate, statistic, p.value) %>% 
   dplyr::mutate(p.value = round(p.value, 3)) -> summary_objective2_PERIPOST_IN_PERIPOST_QUIT
+
+
+#compare PERI in to PERI quit
+
+
+lapply(model_listPERIPOST, 
+       function(x) broom::tidy(summary(
+           glht(x, linfct = mcp(my_interaction = "PERI.1 - PERI.0 = 0"))))) %>% 
+    data.table::rbindlist() %>% 
+    cbind(response_names, .) %>% 
+    dplyr::select(response_names, estimate, statistic, p.value) %>% 
+    dplyr::mutate(p.value = round(p.value, 3)) -> summary_objective2_PERI_IN_PERI_QUIT
+
