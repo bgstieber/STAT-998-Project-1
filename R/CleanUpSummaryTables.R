@@ -123,6 +123,21 @@ round_all <- function(df, digits = 3){
 (objective2_PERIQuit_POSTQuit_stdzd <- round_all(objective2_PERIQuit_POSTQuit_stdzd))
 
 
+objective1_results$`Standardized Estimate` = objective1_standardized_results$Estimate
+objective1_results <- objective1_results[,c(1,2, 5,3,4)]
+
+objective2_PERIIn_NONNever$`Standardized Estimate` <- objective2_PERIIn_NONNever$Estimate
+objective2_PERIIn_NONNever <- objective2_PERIIn_NONNever[,c(1,2,5,3,4)]
+
+objective2_PERIQuit_NONNever$`Standardized Estimate` <- objective2_PERIQuit_NONNever_stdzd$Estimate
+objective2_PERIQuit_NONNever <- objective2_PERIQuit_NONNever[,c(1,2,5,3,4)]
+
+objective2_PERIPOSTin_PERIPOSTquit$`Standardized Estimate` <- objective2_PERIPOSTIn_PERIPOSTQuit_stdzd$Estimate
+objective2_PERIPOSTin_PERIPOSTquit <- objective2_PERIPOSTin_PERIPOSTquit[,c(1,2,5,3,4)] 
+
+objective2_PERIQuit_POSTQuit$`Standardized Estimate` <- objective2_PERIQuit_POSTQuit$Estimate
+objective2_PERIQuit_POSTQuit <- objective2_PERIQuit_POSTQuit[,c(1,2,5,3,4)]
+
 #clean up pairwise comparisons table,
 #put it into a correlation plot - not implemented yet
 #save it as a pdf - not implemented yet
