@@ -126,7 +126,7 @@ round_all <- function(df, digits = 3){
 objective1_results$`Standardized Estimate` = objective1_standardized_results$Estimate
 objective1_results <- objective1_results[,c(1,2, 5,3,4)]
 
-objective2_PERIIn_NONNever$`Standardized Estimate` <- objective2_PERIIn_NONNever$Estimate
+objective2_PERIIn_NONNever$`Standardized Estimate` <- objective2_PERIIn_NONNever_stdzd$Estimate
 objective2_PERIIn_NONNever <- objective2_PERIIn_NONNever[,c(1,2,5,3,4)]
 
 objective2_PERIQuit_NONNever$`Standardized Estimate` <- objective2_PERIQuit_NONNever_stdzd$Estimate
@@ -135,7 +135,7 @@ objective2_PERIQuit_NONNever <- objective2_PERIQuit_NONNever[,c(1,2,5,3,4)]
 objective2_PERIPOSTin_PERIPOSTquit$`Standardized Estimate` <- objective2_PERIPOSTIn_PERIPOSTQuit_stdzd$Estimate
 objective2_PERIPOSTin_PERIPOSTquit <- objective2_PERIPOSTin_PERIPOSTquit[,c(1,2,5,3,4)] 
 
-objective2_PERIQuit_POSTQuit$`Standardized Estimate` <- objective2_PERIQuit_POSTQuit$Estimate
+objective2_PERIQuit_POSTQuit$`Standardized Estimate` <- objective2_PERIQuit_POSTQuit_stdzd$Estimate
 objective2_PERIQuit_POSTQuit <- objective2_PERIQuit_POSTQuit[,c(1,2,5,3,4)]
 
 #clean up pairwise comparisons table,
@@ -201,36 +201,49 @@ for(i in 1:nrow(comps)){
 }
 
 
-# panel.cor2 <- function (x, y, corr = NULL, cor.method = 'pearson', digits = 2, 
-#                         cex.cor, ...) 
-# {
-#     if (is.null(corr)) {
-#         if (sum(complete.cases(x, y)) < 2) {
-#             warning("Need at least 2 complete cases for cor()")
-#             return()
-#         }
-#         else {
-#             corr <- cor(x, y, use = "pair", method = cor.method)
-#         }
-#     }
-#     auto <- missing(cex.cor)
-#     usr <- par("usr")
-#     on.exit(par(usr))
-#     par(usr = c(0, 1, 0, 1))
-#     ncol <- 14
-#     pal <- col.regions(ncol)
-#     col.ind <- as.numeric(cut(corr, breaks = seq(from = -1, to = 1, 
-#                                                  length = ncol + 1), include.lowest = TRUE))
-#     corr <- formatC(corr, digits = digits, format = "f")
-#     if (auto) 
-#         cex.cor <- 0.7/strwidth(corr)
-#     text(0.5, 0.5, corr, cex = cex.cor, col = pal[col.ind])
-# }
+panel.shadeNtext <- function (x, y, corr = NULL, col.regions, cor.method, digits = 2, 
+                              cex.cor, ...) 
+{
+    if (is.null(corr)) {
+        if (sum(complete.cases(x, y)) < 2) {
+            warning("Need at least 2 complete cases for cor()")
+            return()
+        }
+        else {
+            corr <- cor(x, y, use = "pair", method = cor.method)
+        }
+    }
+    auto <- missing(cex.cor)
+    usr <- par("usr")
+    on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    ncol <- 14
+    pal <- col.regions(ncol)
+    col.ind <- as.numeric(cut(corr, breaks = seq(from = -1, to = 1, 
+                                                 length = ncol + 1), include.lowest = TRUE))
+    corr <- formatC(corr, digits = digits, format = "f")
+    if (auto) 
+        cex.cor <- 0.7/strwidth(corr)
+    box(col = "lightgray")
+    text(0.5, 0.5, ifelse(corr == '1.00', '', corr), cex = cex.cor, col = pal[col.ind])
+}
+
 
 response_names2 <- c('Sub-head\nBMC', 'DR 1/3\nArea', 'DR 1/3\nBMC','DR 1/3\nMod',
                     'UDR\nArea', 'UDR\nBMC', 'UDR\nIBS', 'FN\nBMC', 'NN\nMod',
                     'NN\nBR', 'NN\nWidth', 'NN\nED', 'NN\nCT', 'PA L3\nBMC')
 
+
+
 corrgram(comp_matrix_pvalue, upper.panel = NULL, lower.panel = panel.cor,
          col.regions = function(x) gray.colors(x, start = 0, end = .6),
          labels = response_names2, cex.labels = 1.2)
+
+
+
+png('Objective3CorrGram002.png', width = 17, height = 10, units = 'in', res = 72 * 6)
+corrgram(comp_matrix_pvalue, upper.panel = NULL, lower.panel = panel.shadeNtext,
+         col.regions = function(x) gray.colors(x, start = 0, end = .6),
+         labels = response_names2, cex.labels = 2)
+dev.off()
+
