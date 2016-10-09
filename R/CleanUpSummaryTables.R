@@ -13,16 +13,31 @@ objective1_standardized_results <- read.csv('Objective1_Standardized_coef.csv')
 #compares peri group while in gymnastics to non group
 objective2_PERIIn_NONNever <- read.csv('summary_objective2_PERIIn_NONNever.csv',
                                        stringsAsFactors = FALSE)
+
+objective2_PERIIn_NONNever_stdzd <- read.csv('summary_objective2_PERIIn_NONNever_stdzd.csv',
+                                       stringsAsFactors = FALSE)
+
 #compares peri group after quitting to non group
 objective2_PERIQuit_NONNever <- read.csv('summary_objective2_PERIQuit_NONNever.csv',
+                                         stringsAsFactors = FALSE)
+
+objective2_PERIQuit_NONNever_stdzd <- read.csv('summary_objective2_PERIQuit_NONNever_stdzd.csv',
                                          stringsAsFactors = FALSE)
 
 #compares PERI and POST while in gymnastics to PERI and POST after they've quit
 objective2_PERIPOSTin_PERIPOSTquit <- read.csv('summary_objective2_PERIPOSTin_PERIPOSTquit.csv',
                                        stringsAsFactors = FALSE)[,-1]
+
+objective2_PERIPOSTIn_PERIPOSTQuit_stdzd <- 
+    read.csv('summary_objective2_PERIPOSTIn_PERIPOSTquit_stdzd.csv',
+                                               stringsAsFactors = FALSE)[,-1]
+
 #compares POST quit to PERI quit
 objective2_PERIQuit_POSTQuit <- read.csv('summary_objective2_PERIQuit_POSTQuit.csv',
                                        stringsAsFactors = FALSE)[,-1]
+
+objective2_PERIQuit_POSTQuit_stdzd <- read.csv('summary_objective2_PERIQuit_POSTQuit_stdzd.csv',
+                                         stringsAsFactors = FALSE)[,-1]
 
 
 
@@ -38,6 +53,11 @@ names(objective2_PERIIn_NONNever) <- change_col_names
 names(objective2_PERIQuit_NONNever) <- change_col_names
 names(objective2_PERIPOSTin_PERIPOSTquit) <- change_col_names
 names(objective2_PERIQuit_POSTQuit) <- change_col_names
+
+names(objective2_PERIIn_NONNever_stdzd) <- change_col_names
+names(objective2_PERIQuit_NONNever_stdzd) <- change_col_names
+names(objective2_PERIPOSTIn_PERIPOSTQuit_stdzd) <- change_col_names
+names(objective2_PERIQuit_POSTQuit_stdzd) <- change_col_names
 
 #BMC - Bone Mineral Content
 #DR - Distal Radius
@@ -75,6 +95,11 @@ objective2_PERIQuit_NONNever[,1] <- change_response_names
 objective2_PERIPOSTin_PERIPOSTquit[,1] <- change_response_names
 objective2_PERIQuit_POSTQuit[,1] <- change_response_names
 
+objective2_PERIIn_NONNever_stdzd[,1] <- change_response_names
+objective2_PERIQuit_NONNever_stdzd[,1] <- change_response_names
+objective2_PERIPOSTIn_PERIPOSTQuit_stdzd[,1] <- change_response_names
+objective2_PERIQuit_POSTQuit_stdzd[,1] <- change_response_names
+
 rownames(objective1_results) <- NULL
 rownames(objective2_PERIIn_NONNever) <- NULL
 rownames(objective2_PERIQuit_NONNever) <- NULL
@@ -91,6 +116,11 @@ round_all <- function(df, digits = 3){
 (objective2_PERIQuit_NONNever <- round_all(objective2_PERIQuit_NONNever))
 (objective2_PERIPOSTin_PERIPOSTquit <- round_all(objective2_PERIPOSTin_PERIPOSTquit))
 (objective2_PERIQuit_POSTQuit <- round_all(objective2_PERIQuit_POSTQuit))
+
+(objective2_PERIIn_NONNever_stdzd <- round_all(objective2_PERIIn_NONNever_stdzd))
+(objective2_PERIQuit_NONNever_stdzd <- round_all(objective2_PERIQuit_NONNever_stdzd))
+(objective2_PERIPOSTIn_PERIPOSTQuit_stdzd <- round_all(objective2_PERIPOSTIn_PERIPOSTQuit_stdzd))
+(objective2_PERIQuit_POSTQuit_stdzd <- round_all(objective2_PERIQuit_POSTQuit_stdzd))
 
 
 #clean up pairwise comparisons table,
