@@ -1,4 +1,5 @@
 library(lme4)
+library(lmerTest)
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -49,12 +50,11 @@ colnames(gym_response_center) <- paste0(response_names,
 
 #need to multiply three responses by -1
 
-reverse_responses <- c('NN.BR.Hip_norm',
-                       'NN.width.Hip_norm',
-                       'NN.ED.Hip_norm'
-                       )
-
-gym_response_center[reverse_responses] <- -1 * gym_response_center[reverse_responses]
+# reverse_responses <- c('NN.BR.Hip_norm',
+#                        'NN.width.Hip_norm',
+#                        'NN.ED.Hip_norm')
+# 
+# gym_response_center[reverse_responses] <- -1 * gym_response_center[reverse_responses]
 
 
 
@@ -161,6 +161,12 @@ model_allME_list <- list(
   'allME.fitSBMC' = fit.allME.SBMCnorm
 )
 
+
+standardized_coef_summary <- 
+    do.call('rbind', 
+        lapply(model_allME_list, function(x) summary(x)$coefficients[4, c(1,4,5)]))
+
+rownames(standardized_coef_summary) <- response_names
 
 # sub_model_list <- list(
 #   'sub.fitSHBMC' = sub.fitSHBMCnorm,
